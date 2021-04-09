@@ -21,5 +21,10 @@ The annotation for validation and test set will be released in accordance with t
 ## Preprocessing
 After downloading all the groupd it is important to convert all the videos into frames by changing the working directory to (./Data) and running the following commands:
 ```
-python 
+python generate_frames.py contiguous_videos/
+
+python generate_frames.py short_gap/
+
+python generate_frames.py long_gap/
+
 ```
