@@ -1,0 +1,1 @@
+# IJCAI-2021-Continual-Activity-Recognition-Challenge
