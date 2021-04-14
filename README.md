@@ -9,7 +9,7 @@ Our MEVA-CL benchmark is composed by 15 sequences, broken down into three groups
 3. Long_gap: Five 15-minute-long sequences from sites G420, G421, G424, G506, and G638 formed by three original videos separated by a long gap (hours or days).
 
 ## Download
-We release the videos and only train annotation annotations can download by changing your current directory to the Data directory and running the bash file [download_data.sh](./Data/download_data.sh) will automatically download the annotation files and video directory in the currect directory (Data).
+We release the videos and train annotations which can be download by changing your current directory to the Data directory and running the bash file [download_data.sh](./Data/download_data.sh) to automatically download the annotation files and video directory in the currect directory (Data).
 ```
 bash download_data.sh
 ```
