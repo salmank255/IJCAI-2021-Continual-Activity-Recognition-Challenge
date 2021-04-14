@@ -1,5 +1,5 @@
-# IJCAI-2021-Continual-Activity-Recognition-Challenge
-https://sites.google.com/view/sscl-workshop-ijcai-2021/
+# IJCAI-2021-Continual-Activity-Recognition-Challenge (https://sites.google.com/view/sscl-workshop-ijcai-2021/)
+
 The first proposed benchmark (MEVA-CL) is built on top of the MEVA (Multiview Extended Video with Activities) activity detection dataset (https://mevadata.org/), which we adapted to create the first benchmark for continual, long duration semi-supervised learning in a classification setting in which the purpose is to classify the input video frames in terms of activity classes.
 
 Our MEVA-CL benchmark is composed by 15 sequences, broken down into three groups:
