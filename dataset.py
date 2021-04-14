@@ -21,6 +21,7 @@ class DATASET(data.Dataset):
         self.ids = list()
         self.video_list = list()
         self._make_lists()
+        self.dataLen = len(self.ids)
 
     def __len__(self):
         "Denotes the total number of samples"
@@ -59,7 +60,10 @@ class DATASET(data.Dataset):
         image = Image.open(os.path.join(self.root_path,'rgb-images', videoname, '{:05d}.jpg'.format(frame_num)))
         if self.transform is not None:
             image = self.transform(image)
-        y = torch.LongTensor([int(label)])
+        if self.split_type == 'train_split':
+            y = torch.LongTensor([int(label)])
+        else:
+            y = torch.LongTensor([label])
         return image, y,videoname,frame_num
 
 
