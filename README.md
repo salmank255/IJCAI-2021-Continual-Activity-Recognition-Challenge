@@ -1,5 +1,5 @@
 # IJCAI-2021-Continual-Activity-Recognition-Challenge
-
+https://sites.google.com/view/sscl-workshop-ijcai-2021/
 The first proposed benchmark (MEVA-CL) is built on top of the MEVA (Multiview Extended Video with Activities) activity detection dataset (https://mevadata.org/), which we adapted to create the first benchmark for continual, long duration semi-supervised learning in a classification setting in which the purpose is to classify the input video frames in terms of activity classes.
 
 Our MEVA-CL benchmark is composed by 15 sequences, broken down into three groups:
@@ -29,9 +29,26 @@ python generate_frames.py long_gap/
 
 ```
 
-## Training
+## Training, Validation / Self-Training, Testing 
 
 ```
-python main.py --DATA_ROOT=Data/contiguous_videos --SAVE_ROOT= --GROUP=contiguous_videos
+python main.py --DATA_ROOT=Data/contiguous_videos\
+    --SAVE_ROOT=Outputs --GROUP=contiguous_videos --MODE=all\
+    --BATCH_SIZE=64 --VAL_BATCH_SIZE=64 --TEST_BATCH_SIZE=64\
+    --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=10 --learning_rate=0.001 --device=cuda
+
+Arguments  
+--DATA_ROOT --> The directory to your pre-processed dataset
+--SAVE_ROOT --> The directory where you want to save the trained models and output json files
+--GROUP     --> There are three groups in the dataset, the group value should be contiguous_videos or short_gap or long_gap
+--MODE      --> Mode represent which specific section you want to run i.e., all, train, val, and test
+--BATCH_SIZE --> Training batch size
+--VAL_BATCH_SIZE --> Validation/Self training batch size
+--TEST_BATCH_SIZE --> Test batch size
+--NUM_WORKERS --> Number of worker to load data in parllel
+--MAX_EPOCHS --> Training epochs
+--VAL_EPOCHS --> Validation epochs
+--learning_rate --> Learning rate
+--device --> Using GPU or CPU 
 
 ```
