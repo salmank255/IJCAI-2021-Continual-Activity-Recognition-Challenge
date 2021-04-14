@@ -38,6 +38,7 @@ python main.py --DATA_ROOT=Data/contiguous_videos\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=10 --learning_rate=0.001 --device=cuda
 
 Arguments  
+
 --DATA_ROOT       --> The directory to your pre-processed dataset
 --SAVE_ROOT       --> The directory where you want to save the trained models and output json files
 --GROUP           --> There are three groups in the dataset, the group value should be contiguous_videos or short_gap or long_gap
