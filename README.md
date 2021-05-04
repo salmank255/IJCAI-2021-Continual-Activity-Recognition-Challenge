@@ -32,16 +32,21 @@ python generate_frames.py long_gap/
 ## Training, Validation / Self-Training, Testing 
 
 ```
-python main.py --DATA_ROOT=Data/contiguous_videos\
-    --SAVE_ROOT=Outputs --GROUP=contiguous_videos --MODE=all\
-    --BATCH_SIZE=64 --VAL_BATCH_SIZE=64 --TEST_BATCH_SIZE=64\
-    --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=10 --learning_rate=0.001 --device=cuda
+python main.py --DATA_ROOT=Data\
+    --SAVE_ROOT=Outputs --MODE=train --BATCH_SIZE=16\
+    --VAL_BATCH_SIZE=8 --TEST_BATCH_SIZE=8\
+    --NUM_WORKERS=8 --MAX_EPOCHS=15 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
+
+python main.py --DATA_ROOT=Data\
+    --SAVE_ROOT=Outputs --MODE=val --BATCH_SIZE=16\
+    --VAL_BATCH_SIZE=8 --TEST_BATCH_SIZE=8\
+    --NUM_WORKERS=8 --MAX_EPOCHS=15 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
+    
 
 Arguments  
 
 --DATA_ROOT       --> The directory to your pre-processed dataset
 --SAVE_ROOT       --> The directory where you want to save the trained models and output json files
---GROUP           --> There are three groups in the dataset, the group value should be contiguous_videos or short_gap or long_gap
 --MODE            --> Mode represent which specific section you want to run i.e., all, train, val, and test
 --BATCH_SIZE      --> Training batch size
 --VAL_BATCH_SIZE  --> Validation/Self training batch size
