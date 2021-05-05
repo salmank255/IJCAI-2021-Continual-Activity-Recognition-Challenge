@@ -22,9 +22,9 @@ The annotation for validation and test set will be released in accordance with t
 ## Requirements
 Install all required packages:
 ```
-OpenCV
-Pytorch 
-efficientnet_pytorch (pip install efficientnet_pytorch)
+1. OpenCV => 3.4.2
+2. PyTorch => 1.4.0
+3. efficientnet_pytorch (pip install efficientnet_pytorch)
 
 ```
 
