@@ -102,6 +102,7 @@ python main.py --DATA_ROOT=Data\
   </tr>
 </table>
 <img src="./baseline_results/val_nost.PNG" alt="val nost"/>
+
 ### Results on test-split without self-training
 <table style="width:100% th">
   <tr>
@@ -110,6 +111,7 @@ python main.py --DATA_ROOT=Data\
   </tr>
 </table>
 <img src="./baseline_results/test_nost.PNG" alt="val nost"/>
+
 ### Results on val-split after self-training
 <table style="width:100% th">
   <tr>
@@ -118,6 +120,7 @@ python main.py --DATA_ROOT=Data\
   </tr>
 </table>
 <img src="./baseline_results/val_st.PNG" alt="val nost"/>
+
 ### Results on test-split after self-training
 <table style="width:100% th">
   <tr>
@@ -126,4 +129,5 @@ python main.py --DATA_ROOT=Data\
   </tr>
 </table>
 <img src="./baseline_results/test_st.PNG" alt="val nost"/>
+
 ### Results on val- and test-split combine after self-training
