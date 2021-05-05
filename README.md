@@ -30,46 +30,52 @@ python generate_frames.py long_gap/
 ```
 
 ## Training, Evaluation, and Self-Training 
-
+### Training the baseline on train-split
 ```
 ### Training the baseline on train-split
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=train --BATCH_SIZE=16\
     --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
     --NUM_WORKERS=8 --MAX_EPOCHS=15 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
+```
    
 ### Evaluation the baseline on val-split   
+```
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=evaluate_val --BATCH_SIZE=4\
     --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
-    
+```    
 ### Evaluation the baseline on test-split 
+```
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=evaluate_test --BATCH_SIZE=4\
     --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda  
-
+```
 ### Self-training on val-split  
+```
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=self_val --BATCH_SIZE=16\
     --VAL_BATCH_SIZE=16 --TEST_BATCH_SIZE=16\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
-
+```
 ### Self-training on test-split  
+```
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=self_test --BATCH_SIZE=16\
     --VAL_BATCH_SIZE=16 --TEST_BATCH_SIZE=16\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda &&
-
+```
 ### Self-training on val and test-split combine  
+```
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=self_val_test_combine --BATCH_SIZE=16\
     --VAL_BATCH_SIZE=16 --TEST_BATCH_SIZE=16\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
-
-Arguments  
-
+```
+### Arguments  
+```
 --DATA_ROOT       --> The directory to your pre-processed dataset
 --SAVE_ROOT       --> The directory where you want to save the trained models and output json files
 --MODE            --> Mode represent which specific section you want to run
@@ -88,5 +94,14 @@ Arguments
 --VAL_EPOCHS      --> Validation epochs
 --learning_rate   --> Learning rate
 --device          --> Using GPU or CPU 
-
 ```
+## Results
+### Results on val-split without self-training
+
+### Results on test-split without self-training
+
+### Results on val-split after self-training
+
+### Results on test-split after self-training
+
+### Results on val- and test-split combine after self-training
