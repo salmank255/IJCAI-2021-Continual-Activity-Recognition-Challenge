@@ -42,14 +42,14 @@ python main.py --DATA_ROOT=Data\
 ### Evaluation the baseline on val-split   
 ```
 python main.py --DATA_ROOT=Data\
-    --SAVE_ROOT=Outputs --MODE=evaluate_val --BATCH_SIZE=4\
+    --SAVE_ROOT=Outputs --MODE=evaluate_val --BATCH_SIZE=16\
     --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
 ```    
 ### Evaluation the baseline on test-split 
 ```
 python main.py --DATA_ROOT=Data\
-    --SAVE_ROOT=Outputs --MODE=evaluate_test --BATCH_SIZE=4\
+    --SAVE_ROOT=Outputs --MODE=evaluate_test --BATCH_SIZE=16\
     --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda  
 ```
@@ -57,21 +57,21 @@ python main.py --DATA_ROOT=Data\
 ```
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=self_val --BATCH_SIZE=16\
-    --VAL_BATCH_SIZE=16 --TEST_BATCH_SIZE=16\
+    --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
 ```
 ### Self-training on test-split  
 ```
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=self_test --BATCH_SIZE=16\
-    --VAL_BATCH_SIZE=16 --TEST_BATCH_SIZE=16\
+    --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda &&
 ```
 ### Self-training on val and test-split combine  
 ```
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=self_val_test_combine --BATCH_SIZE=16\
-    --VAL_BATCH_SIZE=16 --TEST_BATCH_SIZE=16\
+    --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
     --NUM_WORKERS=8 --MAX_EPOCHS=10 --VAL_EPOCHS=1 --learning_rate=0.001 --device=cuda
 ```
 ### Arguments  
