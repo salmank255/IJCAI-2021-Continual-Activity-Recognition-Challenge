@@ -141,3 +141,20 @@ python main.py --DATA_ROOT=Data\
 <img src="./baseline_results/test_st.PNG" alt="val nost"/>
 
 ### Results on val- and test-split combine after self-training
+#### Validation
+<table style="width:100% th">
+  <tr>
+    <td>F1-score (macro-avgerage</td>
+    <td>0.14</td> 
+  </tr>
+</table>
+<img src="./baseline_results/val_st_combine.PNG" alt="val nost"/>
+
+#### Test
+<table style="width:100% th">
+  <tr>
+    <td>F1-score (macro-avgerage</td>
+    <td>0.13</td> 
+  </tr>
+</table>
+<img src="./baseline_results/test_st_combine.PNG" alt="val nost"/>
