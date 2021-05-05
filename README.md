@@ -95,11 +95,35 @@ python main.py --DATA_ROOT=Data\
 ```
 ## Results
 ### Results on val-split without self-training
-
+<table style="width:100% th">
+  <tr>
+    <td>F1-score (macro-avgerage</td>
+    <td>0.16</td> 
+  </tr>
+</table>
+![plot](./baseline_results/val_nost.PNG)
 ### Results on test-split without self-training
-
+<table style="width:100% th">
+  <tr>
+    <td>F1-score (macro-avgerage</td>
+    <td>0.14</td> 
+  </tr>
+</table>
+![plot](./baseline_results/val_st.PNG)
 ### Results on val-split after self-training
-
+<table style="width:100% th">
+  <tr>
+    <td>F1-score (macro-avgerage</td>
+    <td>0.14</td> 
+  </tr>
+</table>
+![plot](./baseline_results/test_nost.PNG)
 ### Results on test-split after self-training
-
+<table style="width:100% th">
+  <tr>
+    <td>F1-score (macro-avgerage</td>
+    <td>0.14</td> 
+  </tr>
+</table>
+![plot](./baseline_results/test_st.PNG)
 ### Results on val- and test-split combine after self-training
