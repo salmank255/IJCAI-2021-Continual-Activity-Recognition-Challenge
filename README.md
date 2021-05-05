@@ -101,7 +101,8 @@ python main.py --DATA_ROOT=Data\
     <td>0.16</td> 
   </tr>
 </table>
-![plot](./baseline_results/val_nost.PNG)
+![val_nost](./baseline_results/val_nost.PNG)
+
 ### Results on test-split without self-training
 <table style="width:100% th">
   <tr>
