@@ -72,7 +72,6 @@ def train(model, device, train_loader, criterion,optimizer,scheduler,train_len,n
         print('-' * 10)
         log_file.write('Training Epoch {}/{}\n'.format(epoch, num_epochs))
         log_file.write('-' * 10+ '\n')
-        
         running_loss = 0.0
         running_corrects = 0
         model.train()
@@ -109,27 +108,29 @@ def train(model, device, train_loader, criterion,optimizer,scheduler,train_len,n
    
     return model,optimizer,scheduler
 
-def evaluate(model, device, criterion,optimizer,scheduler,val_loader,test_loader,transform,nb_classes, num_epochs,thresh=0.4):
+def evaluate_val(model, device, criterion,optimizer,scheduler,val_loader, num_epochs):
     val_json = AutoDict()
-    test_json = AutoDict()
     for epoch in range(1,num_epochs+1):
         print('Evaluation without self-training Epoch {}/{}\n'.format(epoch, num_epochs))
         print('-' * 10)
-        running_loss = 0.0
-        running_corrects = 0
-        
         for batch_idx, (X, y,vid_names,frame_nums,category) in enumerate(val_loader):
             model.eval()
             optimizer.zero_grad()
             outputs = model(X)
             _, label = torch.max(outputs, 1)
-
             for i in range(len(frame_nums)):
                 lab = label[i].item()
                 val_json[category[i]]['validation_split']['videos'][vid_names[i]]['frames']['{:05d}.jpg'.format(frame_nums[i].item())] = lab
+        with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_val_predictions_nost.json', 'w') as outfile:
+            json.dump(val_json, outfile)   
+    return model
 
+def evaluate_test(model, device, criterion,optimizer,scheduler,test_loader, num_epochs):
+    test_json = AutoDict()
+    for epoch in range(1,num_epochs+1):
+        print('Evaluation without self-training Epoch {}/{}\n'.format(epoch, num_epochs))
+        print('-' * 10)
         for batch_idx, (X, y,vid_names,frame_nums,category) in enumerate(test_loader):
-        
             model.eval()
             optimizer.zero_grad()
             outputs = model(X)
@@ -137,22 +138,139 @@ def evaluate(model, device, criterion,optimizer,scheduler,val_loader,test_loader
             for i in range(len(frame_nums)):
                 lab = label[i].item()
                 test_json[category[i]]['test_split']['videos'][vid_names[i]]['frames']['{:05d}.jpg'.format(frame_nums[i].item())] = lab
-
-
         with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_test_predictions_nost.json', 'w') as outfile:
             json.dump(test_json, outfile)
-        with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_val_predictions_nost.json', 'w') as outfile:
-            json.dump(val_json, outfile)
-                
     return model
 
 
+def self_val(model, device, criterion,optimizer,scheduler,val_params,transform,nb_classes, samples_per_cls,num_epochs,thresh=0.4):
+    val_json = AutoDict()
+    beta = 0.9999
+    gamma = 2.0
+    loss_type = "focal"
+    
+    for epoch in range(1,num_epochs+1):
+        print('Self Training Val-Fold Epoch {}/{}\n'.format(epoch, num_epochs))
+        print('-' * 10)
+        with open(args.DATA_ROOT +'/Annotation.json') as json_file:
+            annoData = json.load(json_file)
+        for category in ['contiguous_videos', 'short_gap', 'long_gap']:
+            val_videos = annoData[category]['validation_split']['videos']
+            for val_vid_name in val_videos:
+                val_model = copy.deepcopy(model)
+                num_sessions = 5
+                val_sessions_list = []
+                val_len = len(os.listdir(os.path.join(args.DATA_ROOT,category,'rgb-images',val_vid_name)))
+                ses = int(9000/num_sessions)
+                for i in range(1,9000,ses):
+                    val_sessions_list.append(i)
+                val_sessions_list.append(val_len)
+                print("Validation video: ", val_vid_name)
+                ##########Validation
+                for val_inc in range(len(val_sessions_list)-1):
+                    print("Session: ", val_inc)
+                    val_start_sess =  val_sessions_list[val_inc]
+                    val_end_sess =  val_sessions_list[val_inc+1]
+                    val_set = DATASET_VAL_TEST(args,category,val_vid_name,val_start_sess,val_end_sess,transform=transform)
+                    val_loader = data.DataLoader(val_set, **val_params)
+                    #######Self-training
+                    for batch_idx, (X, y,vid_names,frame_nums) in enumerate(val_loader):
+                        val_model.eval()
+                        optimizer.zero_grad()
+                        sudo_outputs = val_model(X)
+                        _, sudo_y = torch.max(sudo_outputs, 1)
+                        for i in range(len(frame_nums)):
+                            if sudo_outputs[i][sudo_y[i].item()] > thresh:                           
+                                val_model.train()
+                                optimizer.zero_grad()
+                                with torch.set_grad_enabled(True):
+                                    X_ = torch.unsqueeze(X[i].cuda(),0)
+                                    y_ = torch.tensor([sudo_y[i].item()]).cuda()
+                                    outputs = val_model(X_)
+                                    _, preds = torch.max(outputs, 1)
+                                    loss = CB_loss(y_.cpu(), outputs.cpu(), samples_per_cls, nb_classes,loss_type, beta, gamma)
+                                    #loss = criterion(outputs, y_)
+                                    loss.backward()
+                                    optimizer.step()
+                    #######Evaluation
+                    for batch_idx, (X, y,vid_names,frame_nums) in enumerate(val_loader):
+                        val_model.eval()
+                        optimizer.zero_grad()
+                        outputs = val_model(X)
+                        _, label = torch.max(outputs, 1)
+                        for i in range(len(frame_nums)):
+                            lab = label[i].item()
+                            val_json[category]['validation_split']['videos'][vid_names[i]]['frames']['{:05d}.jpg'.format(frame_nums[i].item())] = lab
+        with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_self_val_predictions_st.json', 'w') as outfile:
+            json.dump(val_json, outfile)
+    return model
 
-def val(model, device, criterion,optimizer,scheduler,val_params,test_params,transform,nb_classes, samples_per_cls,num_epochs,thresh=0.4):
+
+def self_test(model, device, criterion,optimizer,scheduler,test_params,transform,nb_classes, samples_per_cls,num_epochs,thresh=0.4):
+    test_json = AutoDict()
+    beta = 0.9999
+    gamma = 2.0
+    loss_type = "focal"
+    for epoch in range(1,num_epochs+1):
+        print('Self Training Test-Fold Epoch {}/{}\n'.format(epoch, num_epochs))
+        print('-' * 10)
+        with open(args.DATA_ROOT +'/Annotation.json') as json_file:
+            annoData = json.load(json_file)
+        for category in ['contiguous_videos', 'short_gap', 'long_gap']:
+            test_videos = annoData[category]['test_split']['videos']
+            for test_vid_name in test_videos:
+                test_model = copy.deepcopy(model)
+                num_sessions = 5
+                test_sessions_list = []
+                test_len = len(os.listdir(os.path.join(args.DATA_ROOT,category,'rgb-images',test_vid_name)))
+                ses = int(9000/num_sessions)
+                for i in range(1,9000,ses):
+                    test_sessions_list.append(i)
+                test_sessions_list.append(test_len)
+                ##########Testing
+                print("Testing video: ", test_vid_name)   
+                for test_inc in range(len(test_sessions_list)-1):
+                    print("Session: ", test_inc)
+                    test_start_sess =  test_sessions_list[test_inc]
+                    test_end_sess =  test_sessions_list[test_inc+1]
+                    test_set = DATASET_VAL_TEST(args,category,test_vid_name,test_start_sess,test_end_sess,transform=transform)
+                    test_loader = data.DataLoader(test_set, **test_params)
+                    for batch_idx, (X, y,vid_names,frame_nums) in enumerate(test_loader):
+                        test_model.eval()
+                        optimizer.zero_grad()
+                        sudo_outputs = test_model(X)
+                        _, sudo_y = torch.max(sudo_outputs, 1)
+                        for i in range(len(frame_nums)):
+                            if sudo_outputs[i][sudo_y[i].item()] > thresh:                           
+                                test_model.train()
+                                optimizer.zero_grad()
+                                with torch.set_grad_enabled(True):
+                                    X_ = torch.unsqueeze(X[i].cuda(),0)
+                                    y_ = torch.tensor([sudo_y[i].item()]).cuda()
+                                    outputs = test_model(X_)
+                                    _, preds = torch.max(outputs, 1)
+                                    loss = CB_loss(y_.cpu(), outputs.cpu(), samples_per_cls, nb_classes,loss_type, beta, gamma)
+                                    #loss = criterion(outputs, y_)
+                                    loss.backward()
+                                    optimizer.step()
+                    #######Evaluation
+                    for batch_idx, (X, y,vid_names,frame_nums) in enumerate(test_loader):
+                        test_model.eval()
+                        optimizer.zero_grad()
+                        outputs = test_model(X)
+                        _, label = torch.max(outputs, 1)
+                        for i in range(len(frame_nums)):
+                            lab = label[i].item()
+                            test_json[category]['test_split']['videos'][vid_names[i]]['frames']['{:05d}.jpg'.format(frame_nums[i].item())] = lab
+        with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_self_test_predictions_st.json', 'w') as outfile:
+            json.dump(test_json, outfile)                
+    return model
+
+
+def self_val_test_combine(model, device, criterion,optimizer,scheduler,val_params,test_params,transform,nb_classes, samples_per_cls,num_epochs,thresh=0.4):
     log_file = open(args.SAVE_ROOT+"/"+Mtype+"_validation.log","w",1)
     val_json = AutoDict()
     test_json = AutoDict()
-    val_model = copy.deepcopy(model)
     beta = 0.9999
     gamma = 2.0
     loss_type = "focal"
@@ -170,7 +288,9 @@ def val(model, device, criterion,optimizer,scheduler,val_params,test_params,tran
         for category in ['contiguous_videos', 'short_gap', 'long_gap']:
             val_videos = annoData[category]['validation_split']['videos']
             test_videos = annoData[category]['test_split']['videos']
+            
             for val_vid_name,test_vid_name in zip(val_videos,test_videos):
+                val_model = copy.deepcopy(model)
                 num_sessions = 5
                 val_sessions_list = []
                 test_sessions_list = []
@@ -219,8 +339,6 @@ def val(model, device, criterion,optimizer,scheduler,val_params,test_params,tran
                             lab = label[i].item()
                             val_json[category]['validation_split']['videos'][vid_names[i]]['frames']['{:05d}.jpg'.format(frame_nums[i].item())] = lab
 
-
-
                 ##########Testing
                 print("Testing video: ", test_vid_name)   
                 for test_inc in range(len(test_sessions_list)-1):
@@ -258,9 +376,9 @@ def val(model, device, criterion,optimizer,scheduler,val_params,test_params,tran
                             test_json[category]['test_split']['videos'][vid_names[i]]['frames']['{:05d}.jpg'.format(frame_nums[i].item())] = lab
 
 
-        with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_test_predictions_st.json', 'w') as outfile:
+        with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_self_test_combine_predictions_st.json', 'w') as outfile:
             json.dump(test_json, outfile)
-        with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_val_predictions_st.json', 'w') as outfile:
+        with open(args.SAVE_ROOT+'/'+Mtype+'_Activity_challenge_self_val_combine_predictions_st.json', 'w') as outfile:
             json.dump(val_json, outfile)
         print(confusion_matrix)
                 
@@ -294,14 +412,10 @@ learning_rate = args.learning_rate
 # model_ft.fc = nn.Linear(num_ftrs, numofClasses)
 
 model = EfficientNet.from_pretrained('efficientnet-b5', num_classes=numofClasses)
-
 model = model.to(device)
 print(model)
 
-
-
 samples_per_cls = train_set.nb_samples
-
 nb_samples = train_set.nb_samples
 print(nb_samples)
 weights = 1. / nb_samples
@@ -309,8 +423,6 @@ print(weights)
 
 class_weights = torch.FloatTensor(weights).cuda()
 criterion = nn.CrossEntropyLoss(weight=class_weights)
-#criterion = nn.CrossEntropyLoss()
-#criterion = FocalLoss()
 
 # Observe that all parameters are being optimized
 optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
@@ -331,31 +443,44 @@ if args.MODE == 'all' or args.MODE == 'train':
     torch.save({'model_state_dict':model.state_dict()}, args.SAVE_ROOT+'/'+Mtype+'_trained_model.pth')
 
 
-if args.MODE == 'all' or args.MODE == 'evaluate':
+
+if args.MODE == 'all' or args.MODE == 'evaluate_val':
     val_params = {'batch_size': args.VAL_BATCH_SIZE, 'shuffle': False, 'num_workers': args.NUM_WORKERS, 'drop_last': True}
     val_set = DATASET(args,'validation_split',transform=transform)
     val_loader = data.DataLoader(val_set, **val_params)
 
+    checkpoint = torch.load(args.SAVE_ROOT+'/'+Mtype+'_trained_model.pth')
+    model.load_state_dict(checkpoint['model_state_dict'])  
+    model =evaluate_val(model,device, criterion,optimizer,scheduler,val_loader,val_epochs) 
+
+if args.MODE == 'all' or args.MODE == 'evaluate_test':
     test_params = {'batch_size': args.TEST_BATCH_SIZE, 'shuffle': False, 'num_workers': args.NUM_WORKERS, 'drop_last': True}
     test_set = DATASET(args,'test_split',transform=transform)
     test_loader = data.DataLoader(test_set, **test_params)
 
     checkpoint = torch.load(args.SAVE_ROOT+'/'+Mtype+'_trained_model.pth')
     model.load_state_dict(checkpoint['model_state_dict'])  
-    model =evaluate(model,device, criterion,optimizer,scheduler,val_loader,test_loader,transform,numofClasses,val_epochs) 
+    model =evaluate_test(model,device, criterion,optimizer,scheduler,test_loader,val_epochs) 
 
 
-val_params = {'batch_size': args.VAL_BATCH_SIZE, 'shuffle': False, 'num_workers': args.NUM_WORKERS, 'drop_last': True}
-# val_set = DATASET(args,'validation_split',transform=transform)
-# val_loader = data.DataLoader(val_set, **val_params)
-# val_len = val_set.dataLen
-
-test_params = {'batch_size': args.TEST_BATCH_SIZE, 'shuffle': False, 'num_workers': args.NUM_WORKERS, 'drop_last': True}
-# test_set = DATASET(args,'test_split',transform=transform)
-# test_loader = data.DataLoader(test_set, **test_params)
-# test_len = test_set.dataLen
-
-if args.MODE == 'all' or args.MODE == 'val':
+if args.MODE == 'all' or args.MODE == 'self_val':
+    val_params = {'batch_size': args.VAL_BATCH_SIZE, 'shuffle': False, 'num_workers': args.NUM_WORKERS, 'drop_last': True}
     checkpoint = torch.load(args.SAVE_ROOT+'/'+Mtype+'_trained_model.pth')
     model.load_state_dict(checkpoint['model_state_dict'])                          
-    model =val(model,device, criterion,optimizer,scheduler,val_params,test_params,transform,numofClasses,samples_per_cls,val_epochs) 
+    model = self_val(model,device, criterion,optimizer,scheduler,val_params,transform,numofClasses,samples_per_cls,val_epochs) 
+
+
+if args.MODE == 'all' or args.MODE == 'self_test':
+    test_params = {'batch_size': args.TEST_BATCH_SIZE, 'shuffle': False, 'num_workers': args.NUM_WORKERS, 'drop_last': True}
+    checkpoint = torch.load(args.SAVE_ROOT+'/'+Mtype+'_trained_model.pth')
+    model.load_state_dict(checkpoint['model_state_dict'])                          
+    model =self_test(model,device, criterion,optimizer,scheduler,test_params,transform,numofClasses,samples_per_cls,val_epochs) 
+
+if args.MODE == 'all' or args.MODE == 'self_val_test_combine':
+    val_params = {'batch_size': args.VAL_BATCH_SIZE, 'shuffle': False, 'num_workers': args.NUM_WORKERS, 'drop_last': True}
+    test_params = {'batch_size': args.TEST_BATCH_SIZE, 'shuffle': False, 'num_workers': args.NUM_WORKERS, 'drop_last': True}
+    checkpoint = torch.load(args.SAVE_ROOT+'/'+Mtype+'_trained_model.pth')
+    model.load_state_dict(checkpoint['model_state_dict'])                          
+    model =self_val_test_combine(model,device, criterion,optimizer,scheduler,val_params,test_params,transform,numofClasses,samples_per_cls,val_epochs) 
+
+
