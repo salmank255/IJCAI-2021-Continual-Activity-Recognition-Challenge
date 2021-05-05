@@ -19,6 +19,16 @@ You can download the all three groups videos and annotation from [Google-Drive l
 
 The annotation for validation and test set will be released in accordance with the [IJCAI 2021 CL Challenge](https://sites.google.com/view/sscl-workshop-ijcai-2021/).
 
+## Requirements
+Install all required packages:
+```
+OpenCV
+Pytorch 
+efficientnet_pytorch (pip install efficientnet_pytorch)
+
+```
+
+
 ## Preprocessing
 After downloading all the groups it is important to convert all the videos into frames by changing the working directory to (./Data) and running the following commands:
 ```
