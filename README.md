@@ -47,7 +47,13 @@ Arguments
 
 --DATA_ROOT       --> The directory to your pre-processed dataset
 --SAVE_ROOT       --> The directory where you want to save the trained models and output json files
---MODE            --> Mode represent which specific section you want to run i.e., all, train, val, and test
+--MODE            --> Mode represent which specific section you want to run
+    --train                 --> To train the model on supervised fold of the data
+    --evaluate_val          --> To generate the prediction results for validation fold on supervised model
+    --evaluate_test         --> To generate the prediction results for test fold on supervised model
+    --self_val              --> To self train the supervised model on validation fold and generate the results
+    --self_test             --> To self train the supervised model on test fold and generate the results
+    --self_val_test_combine --> To self train the supervised model on validation and test folds together and generate the results
 --BATCH_SIZE      --> Training batch size
 --VAL_BATCH_SIZE  --> Validation/Self training batch size
 --TEST_BATCH_SIZE --> Test batch size
