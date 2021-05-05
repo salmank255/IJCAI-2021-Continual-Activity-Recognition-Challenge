@@ -277,7 +277,7 @@ def self_val_test_combine(model, device, criterion,optimizer,scheduler,val_param
     
     for epoch in range(1,num_epochs+1):
         confusion_matrix = np.zeros((nb_classes, nb_classes),dtype=int)
-        print('Validation/Self Training Epoch {}/{}\n'.format(epoch, num_epochs))
+        print('Self Training Validation/Test Fold combine Epoch {}/{}\n'.format(epoch, num_epochs))
         print('-' * 10)
         log_file.write('Validation/Self Training Epoch {}/{}\n'.format(epoch, num_epochs))
         log_file.write('-' * 10+ '\n')
