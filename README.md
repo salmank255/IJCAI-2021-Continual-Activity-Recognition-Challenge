@@ -32,7 +32,7 @@ python generate_frames.py long_gap/
 ## Training, Evaluation, and Self-Training 
 
 ```
-### Training the baseline on train-split
+**### Training the baseline on train-split**
 python main.py --DATA_ROOT=Data\
     --SAVE_ROOT=Outputs --MODE=train --BATCH_SIZE=16\
     --VAL_BATCH_SIZE=4 --TEST_BATCH_SIZE=4\
