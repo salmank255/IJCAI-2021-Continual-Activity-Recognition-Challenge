@@ -11,6 +11,7 @@ Our MEVA-CL benchmark is composed by 15 sequences, broken down into three groups
 ## Download
 We release the videos and train annotations which can be download by changing your current directory to the Data directory and running the bash file [download_data.sh](./Data/download_data.sh) to automatically download the annotation files and video directory in the currect directory (Data).
 ```
+cd Data
 bash download_data.sh
 ```
 OR 
@@ -21,11 +22,8 @@ The annotation for validation and test set will be released in accordance with t
 ## Preprocessing
 After downloading all the groups it is important to convert all the videos into frames by changing the working directory to (./Data) and running the following commands:
 ```
-python generate_frames.py contiguous_videos/
-
-python generate_frames.py short_gap/
-
-python generate_frames.py long_gap/
+cd Data
+python generate_frames.py contiguous_videos/ && python generate_frames.py short_gap/ && python generate_frames.py long_gap/
 
 ```
 
