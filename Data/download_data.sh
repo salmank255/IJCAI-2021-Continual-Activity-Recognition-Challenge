@@ -1,18 +1,18 @@
 
 #Downloading contiguous videos in zip
-wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1Qn_QlDOPAAYj7CrehU8aVnng2CpvFlg5' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1Qn_QlDOPAAYj7CrehU8aVnng2CpvFlg5" -O contiguous_videos.zip
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1tp8Y576PTFPiduE0_hu6fAPp4iFWG53Z' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1tp8Y576PTFPiduE0_hu6fAPp4iFWG53Z" -O contiguous_videos.zip
 #Unzipping the videos
 unzip contiguous_videos.zip
 #Removing the zip file
 rm contiguous_videos.zip
 #Downloading short gap videos in zip
-wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1Rc2T_DUrzzJ7K2e5f_nH21_ZeVzwPaxa' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1Rc2T_DUrzzJ7K2e5f_nH21_ZeVzwPaxa" -O short_gap.zip
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1vpVvL43v93U0Cd8Kpv6kpUQSEgKoNp1c' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1vpVvL43v93U0Cd8Kpv6kpUQSEgKoNp1c" -O short_gap.zip
 #Unzipping the videos
 unzip short_gap.zip
 #Removing the zip file
 rm short_gap.zip
 #Downloading long gap videos in zip
-wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1ZpU3YuZwwcZH033dxbqZm5jZLqczJdiu' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1ZpU3YuZwwcZH033dxbqZm5jZLqczJdiu" -O long_gap.zip
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1L_C8iUWzIPqmJuci4RRFqct9yUpOrb82' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1L_C8iUWzIPqmJuci4RRFqct9yUpOrb82" -O long_gap.zip
 #Unzipping the videos
 unzip long_gap.zip
 #Removing the zip file
